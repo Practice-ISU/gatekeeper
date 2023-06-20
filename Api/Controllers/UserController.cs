@@ -7,16 +7,16 @@ namespace Api.Controllers
     using Api.Data.Api.Requests;
     using Api.Data.Api.Responses;
 
-    [Route("/auth")]
+    [Route("auth")]
     [ApiController]
     public class UserController : Controller
     {
         [HttpPost]
-        [Route("/register")]
+        [Route("registration")]
         public IActionResult Register(RegistrationRequest request)
         {
-
-            if (request.IsValid())
+            Console.WriteLine(request.Username);
+            if (!request.IsValid())
             {
                 return BadRequest(new RegistrationResponse
                 {

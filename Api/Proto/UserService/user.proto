@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package proto_user;
+
+option go_package = "grpc-server/internal/api/grpc";
+
+message User {
+	int64 id = 1;
+	string username = 2;
+	string password = 3;
+	string token = 4;
+}
+
+// DTO
+
+message UserDTO {
+	int64 id = 1;
+	string username = 2;
+	string token = 3;
+}
+
+message UserRegisterDTO {
+	string username = 1;
+	string password = 2;
+}
+
+
+message UserToken {
+	string token = 1;
+}
+
+message UserId {
+	int64 id = 1;
+}
+
+// Responses
+
+message Details {
+	bool success = 1;
+	string mess = 2;
+}
+
+message UserRegisterResponse {
+	Details details = 1;
+	UserDTO user = 2;
+}
+
+message UserResponse {
+	Details details = 1;
+	UserDTO user = 2;
+}
+
+message UserVerifyResponse {
+	Details details = 1;
+	UserDTO user = 2;
+}
+
+message UserLoginDTO {
+	string username = 1;
+	string password = 2;
+}
+
+message UserLoginResponse {
+	Details details = 1;
+	string token = 2;
+}
+
+
+service UserGrpcService {
+	rpc RegisterUser(UserRegisterDTO) returns (UserRegisterResponse) {}
+	rpc LoginUser(UserLoginDTO) returns (UserLoginResponse) {}
+	rpc VerifyUser(UserToken) returns (UserVerifyResponse) {}
+
+	rpc GetUserById(UserId) returns (UserResponse) {}
+	rpc GetUserByTocken(UserToken) returns (UserResponse) {}
+}	

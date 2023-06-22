@@ -21,7 +21,6 @@ namespace Api.Controllers
         [Route("registration")]
         public async Task<IActionResult> RegistrationAsync(RegistrationRequest request)
         {
-
             if (!request.IsValid())
             {
                 return BadRequest(new RegistrationResponse
@@ -32,17 +31,14 @@ namespace Api.Controllers
             }
 
             string channel = "";
+
             try
             {
-                string? tempChannel = await GetChannelRequest.GetChannel("UserGrpcService")!;
-                if (tempChannel != null)
-                {
-                    channel = tempChannel;
-                }
+                channel = await GetChannelRequest.GetChannel("UserGrpcService");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UserGrpcService {ex.Message}");
+                Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
                 return BadRequest(new RegistrationResponse
                 {
                     Message = "Service not available",
@@ -50,25 +46,36 @@ namespace Api.Controllers
                 });
             }
 
-            Console.WriteLine($"UserGrpsChanel = {channel}");
-            UserRegisterResponse responseGrpc = await RegistrationRequestGrpc.Registration(request, channel);
-            bool statusRegistration = responseGrpc.Details.Success;
+            Console.WriteLine($"UserGrpcChannel = {channel}");
 
-            if (!statusRegistration)
+            try
             {
+                var responseGrpc = await RegistrationRequestGrpc.Registration(request, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    return BadRequest(new RegistrationResponse
+                    {
+                        Message = responseGrpc.Details.Mess,
+                        IsSuccess = false
+                    });
+                }
+
+                return Ok(new RegistrationResponse
+                {
+                    Message = "User registered successfully",
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during registration: {ex.Message}");
                 return BadRequest(new RegistrationResponse
                 {
-                    Message = responseGrpc.Details.Mess,
+                    Message = "Registration failed.",
                     IsSuccess = false
                 });
             }
-
-            return Ok(new RegistrationResponse
-            {
-                Message = "User registered successfully",
-                IsSuccess = true
-            });
-
         }
+
     }
 }

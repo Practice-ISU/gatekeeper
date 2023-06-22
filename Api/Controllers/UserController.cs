@@ -31,7 +31,7 @@ namespace Api.Controllers
                 });
             }
 
-            string channel;
+            string channel = "";
             try
             {
                 string? tempChannel = await GetChannelRequest.GetChannel("UserGrpcService")!;
@@ -50,6 +50,7 @@ namespace Api.Controllers
                 });
             }
 
+            Console.WriteLine($"UserGrpsChanel = {channel}");
             UserRegisterResponse responseGrpc = await RegistrationRequestGrpc.Registration(request, channel);
             bool statusRegistration = responseGrpc.Details.Success;
 

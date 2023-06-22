@@ -14,7 +14,8 @@ namespace Api.Data.GrpcServices.DiscoveryService
             using var channel = GrpcChannel.ForAddress(_channel);
             var client = new Discovery.DiscoveryService.DiscoveryServiceClient(channel);
             var response = await client.GetServicesAsync(new Discovery.GetServicesRequest { });
-            
+
+            channel.ShutdownAsync().Wait();
             return response;
         }
     }

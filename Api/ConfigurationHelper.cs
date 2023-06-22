@@ -15,10 +15,10 @@
 
         public static string GetDiscoveryChannel()
         {
-            string? discoveryChannel = Configuration.GetValue<string>("DiscoveryChanel");
+            string? discoveryChannel = Configuration.GetValue<string>("DiscoveryChannel");
             if (discoveryChannel == null)
             {
-                throw new InvalidOperationException("\"DiscoveryChanel\" not in config (appsettings.json)");
+                throw new InvalidOperationException("\"DiscoveryChannel\" not in config (appsettings.json)");
             }
 
             return discoveryChannel;

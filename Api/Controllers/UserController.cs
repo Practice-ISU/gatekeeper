@@ -77,5 +77,70 @@ namespace Api.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> LoginAsync(LoginRequest request)
+        {
+            if (!request.IsValid())
+            {
+                return BadRequest(new LoginResponse
+                {
+                    Token = null,
+                    Message = "Invalid login data",
+                    IsSuccess = false
+                });
+            }
+
+            string channel = "";
+
+            try
+            {
+                channel = await GetChannelRequest.GetChannel("UserGrpcService");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
+                return BadRequest(new LoginResponse
+                {
+                    Token = null,
+                    Message = "Service not available",
+                    IsSuccess = false
+                });
+            }
+
+            Console.WriteLine($"UserGrpcChannel = {channel}");
+
+            try
+            {
+                var responseGrpc = await  LoginRequestGrpc.Login(request, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    return BadRequest(new LoginResponse
+                    {
+                        Token = null,
+                        Message = responseGrpc.Details.Mess,
+                        IsSuccess = false
+                    });
+                }
+
+                return Ok(new LoginResponse
+                {
+                    Token = responseGrpc.Token,
+                    Message = null,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during login: {ex.Message}");
+                return BadRequest(new LoginResponse
+                {
+                    Token = null,
+                    Message = "Registration failed.",
+                    IsSuccess = false
+                });
+            }
+        }
     }
 }

@@ -6,6 +6,12 @@ namespace Api.Controllers
 {
     using Api.Data.Api.Requests;
     using Api.Data.Api.Responses;
+    using System.Threading.Tasks;
+    using Data.GrpcServices.UserService;
+    using static System.Net.WebRequestMethods;
+    using ProtoUser;
+    using Api.Data.GrpcServices.DiscoveryService;
+    using Discovery;
 
     [Route("auth")]
     [ApiController]
@@ -13,9 +19,9 @@ namespace Api.Controllers
     {
         [HttpPost]
         [Route("registration")]
-        public IActionResult Register(RegistrationRequest request)
+        public async Task<IActionResult> RegistrationAsync(RegistrationRequest request)
         {
-            Console.WriteLine(request.Username);
+
             if (!request.IsValid())
             {
                 return BadRequest(new RegistrationResponse
@@ -25,13 +31,43 @@ namespace Api.Controllers
                 });
             }
 
-            // TODO : Check user exists by user-service
+            string channel;
+            try
+            {
+                string? tempChannel = await GetChannelRequest.GetChannel("UserGrpcService")!;
+                if (tempChannel != null)
+                {
+                    channel = tempChannel;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UserGrpcService {ex.Message}");
+                return BadRequest(new RegistrationResponse
+                {
+                    Message = "Service not available",
+                    IsSuccess = false
+                });
+            }
+
+            UserRegisterResponse responseGrpc = await RegistrationRequestGrpc.Registration(request, channel);
+            bool statusRegistration = responseGrpc.Details.Success;
+
+            if (!statusRegistration)
+            {
+                return BadRequest(new RegistrationResponse
+                {
+                    Message = responseGrpc.Details.Mess,
+                    IsSuccess = false
+                });
+            }
 
             return Ok(new RegistrationResponse
             {
                 Message = "User registered successfully",
                 IsSuccess = true
             });
+
         }
     }
 }

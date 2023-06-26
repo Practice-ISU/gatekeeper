@@ -150,8 +150,68 @@ namespace Api.Controllers
 
         [HttpPost]
         [Route("verify")]
-        public async Task<IActionResult> VerifyTokenAsync(LoginRequest request)
+        public async Task<IActionResult> VerifyTokenAsync(VerifyUserRequest request)
         {
+            if (!request.IsValid())
+            {
+                return BadRequest(new VerifyUserResponse
+                {
+                    Token = null,
+                    Message = "Invalid request",
+                    IsSuccess = false
+                });
+            }
+
+            string channel = "";
+
+            try
+            {
+                channel = await GetChannelRequest.GetChannel("UserGrpcService");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
+                return BadRequest(new VerifyUserResponse
+                {
+                    Token = null,
+                    Message = "Service not available",
+                    IsSuccess = false
+                });
+            }
+
+            Console.WriteLine($"UserGrpcChannel = {channel}");
+
+            try
+            {
+                var responseGrpc = await VerifyUserGrpc.VerifyUser(request.Token, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    return BadRequest(new VerifyUserResponse
+                    {
+                        Token = null,
+                        Message = responseGrpc.Details.Mess,
+                        IsSuccess = false
+                    });
+                }
+
+                return Ok(new VerifyUserResponse
+                {
+                    Token = responseGrpc.User.Token,
+                    Message = "Verification is successful",
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during login: {ex.Message}");
+                return BadRequest(new VerifyUserResponse
+                {
+                    Token = null,
+                    Message = "Verification failed",
+                    IsSuccess = false
+                });
+            }
+
         }
     }
 }

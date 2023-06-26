@@ -25,6 +25,7 @@ namespace Api.Controllers
             {
                 return BadRequest(new RegistrationResponse
                 {
+                    Token = null,
                     Message = "Invalid registration data",
                     IsSuccess = false
                 });
@@ -41,6 +42,7 @@ namespace Api.Controllers
                 Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
                 return BadRequest(new RegistrationResponse
                 {
+                    Token = null,
                     Message = "Service not available",
                     IsSuccess = false
                 });
@@ -55,6 +57,7 @@ namespace Api.Controllers
                 {
                     return BadRequest(new RegistrationResponse
                     {
+                        Token = null,
                         Message = responseGrpc.Details.Mess,
                         IsSuccess = false
                     });
@@ -62,6 +65,7 @@ namespace Api.Controllers
 
                 return Ok(new RegistrationResponse
                 {
+                    Token = responseGrpc.User.Token,
                     Message = "User registered successfully",
                     IsSuccess = true
                 });
@@ -71,6 +75,7 @@ namespace Api.Controllers
                 Console.WriteLine($"Error during registration: {ex.Message}");
                 return BadRequest(new RegistrationResponse
                 {
+                    Token = null,
                     Message = "Registration failed.",
                     IsSuccess = false
                 });
@@ -113,7 +118,7 @@ namespace Api.Controllers
 
             try
             {
-                var responseGrpc = await  LoginRequestGrpc.Login(request, channel);
+                var responseGrpc = await LoginRequestGrpc.Login(request, channel);
                 if (!responseGrpc.Details.Success)
                 {
                     return BadRequest(new LoginResponse
@@ -127,7 +132,7 @@ namespace Api.Controllers
                 return Ok(new LoginResponse
                 {
                     Token = responseGrpc.Token,
-                    Message = null,
+                    Message = "Login successful",
                     IsSuccess = true
                 });
             }
@@ -137,10 +142,16 @@ namespace Api.Controllers
                 return BadRequest(new LoginResponse
                 {
                     Token = null,
-                    Message = "Registration failed.",
+                    Message = "Login failed",
                     IsSuccess = false
                 });
             }
+        }
+
+        [HttpPost]
+        [Route("verify")]
+        public async Task<IActionResult> VerifyTokenAsync(LoginRequest request)
+        {
         }
     }
 }

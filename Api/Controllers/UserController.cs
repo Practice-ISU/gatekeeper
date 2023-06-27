@@ -12,17 +12,21 @@ namespace Api.Controllers
     using ProtoUser;
     using Api.Data.GrpcServices.DiscoveryService;
     using Discovery;
+    using log4net;
 
     [Route("auth")]
     [ApiController]
     public class UserController : Controller
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(UserController));
+
         [HttpPost]
         [Route("registration")]
         public async Task<IActionResult> RegistrationAsync(RegistrationRequest request)
         {
             if (!request.IsValid())
             {
+                logger.Warn($"Invalid registration data received for user '{request.Username}'");
                 return BadRequest(new RegistrationResponse
                 {
                     Token = null,
@@ -39,7 +43,7 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
+                logger.Error($"Error in gRPC discovery in UserGrpcService: {ex.Message}");
                 return BadRequest(new RegistrationResponse
                 {
                     Token = null,
@@ -48,13 +52,14 @@ namespace Api.Controllers
                 });
             }
 
-            Console.WriteLine($"UserGrpcChannel = {channel}");
+            logger.Info($"UserGrpcChannel = {channel}");
 
             try
             {
                 var responseGrpc = await RegistrationRequestGrpc.Registration(request, channel);
                 if (!responseGrpc.Details.Success)
                 {
+                    logger.Warn($"Failed registration attempt: {responseGrpc.Details.Mess}");
                     return BadRequest(new RegistrationResponse
                     {
                         Token = null,
@@ -63,6 +68,7 @@ namespace Api.Controllers
                     });
                 }
 
+                logger.Info("User registered successfully");
                 return Ok(new RegistrationResponse
                 {
                     Token = responseGrpc.User.Token,
@@ -72,7 +78,7 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during registration: {ex.Message}");
+                logger.Error($"Error during registration: {ex.Message}");
                 return BadRequest(new RegistrationResponse
                 {
                     Token = null,
@@ -83,12 +89,14 @@ namespace Api.Controllers
         }
 
 
+
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> LoginAsync(LoginRequest request)
         {
             if (!request.IsValid())
             {
+                logger.Warn($"Invalid login data received for user '{request.Username}'");
                 return BadRequest(new LoginResponse
                 {
                     Token = null,
@@ -105,7 +113,7 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
+                logger.Error($"Error in gRPC discovery: {ex.Message}");
                 return BadRequest(new LoginResponse
                 {
                     Token = null,
@@ -114,13 +122,15 @@ namespace Api.Controllers
                 });
             }
 
-            Console.WriteLine($"UserGrpcChannel = {channel}");
+            logger.Info($"UserGrpcChannel = {channel}");
+
 
             try
             {
                 var responseGrpc = await LoginRequestGrpc.Login(request, channel);
                 if (!responseGrpc.Details.Success)
                 {
+                    logger.Error($"Failed login attempt: {responseGrpc.Details.Mess}");
                     return BadRequest(new LoginResponse
                     {
                         Token = null,
@@ -129,6 +139,7 @@ namespace Api.Controllers
                     });
                 }
 
+                logger.Info("User login successfully");
                 return Ok(new LoginResponse
                 {
                     Token = responseGrpc.Token,
@@ -138,7 +149,7 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during login: {ex.Message}");
+                logger.Error($"Error during login: {ex.Message}");
                 return BadRequest(new LoginResponse
                 {
                     Token = null,
@@ -154,6 +165,7 @@ namespace Api.Controllers
         {
             if (!request.IsValid())
             {
+                logger.Error("Invalid verify token request");
                 return BadRequest(new VerifyUserResponse
                 {
                     Token = null,
@@ -170,7 +182,7 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in gRPC discovery: {ex.Message}");
+                logger.Error($"Error in gRPC discovery: {ex.Message}");
                 return BadRequest(new VerifyUserResponse
                 {
                     Token = null,
@@ -179,13 +191,14 @@ namespace Api.Controllers
                 });
             }
 
-            Console.WriteLine($"UserGrpcChannel = {channel}");
+            logger.Info($"UserGrpcChannel = {channel}");
 
             try
             {
                 var responseGrpc = await VerifyUserGrpc.VerifyUser(request.Token, channel);
                 if (!responseGrpc.Details.Success)
                 {
+                    logger.Error($"Failed token verification attempt: {responseGrpc.Details.Mess}");
                     return BadRequest(new VerifyUserResponse
                     {
                         Token = null,
@@ -194,6 +207,7 @@ namespace Api.Controllers
                     });
                 }
 
+                logger.Info($"Token verify successfully");
                 return Ok(new VerifyUserResponse
                 {
                     Token = responseGrpc.User.Token,
@@ -203,7 +217,7 @@ namespace Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during login: {ex.Message}");
+                logger.Error($"Error during login: {ex.Message}");
                 return BadRequest(new VerifyUserResponse
                 {
                     Token = null,
@@ -211,7 +225,6 @@ namespace Api.Controllers
                     IsSuccess = false
                 });
             }
-
         }
     }
 }

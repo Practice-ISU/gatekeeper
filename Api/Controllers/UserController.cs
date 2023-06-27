@@ -85,33 +85,17 @@ namespace Api.Controllers
             if (!request.IsValid())
             {
                 logger.Warn($"Invalid login data received for user '{request.Username}'");
-                return BadRequest(new LoginResponse
-                {
-                    Token = null,
-                    Message = "Invalid login data",
-                    IsSuccess = false
-                });
+                return BadRequest(new LoginResponse("Invalid login data"));
             }
 
-            string channel = "";
+            var channel = await GetGRPCChannel("UserGrpcService");
 
-            try
+            if (channel == "")
             {
-                channel = await GetChannelRequest.GetChannel("UserGrpcService");
-            }
-            catch (Exception ex)
-            {
-                logger.Error($"Error in gRPC discovery: {ex.Message}");
-                return BadRequest(new LoginResponse
-                {
-                    Token = null,
-                    Message = "Service not available",
-                    IsSuccess = false
-                });
+                return BadRequest(new LoginResponse("Service not available"));
             }
 
             logger.Info($"UserGrpcChannel = {channel}");
-
 
             try
             {
@@ -119,31 +103,16 @@ namespace Api.Controllers
                 if (!responseGrpc.Details.Success)
                 {
                     logger.Error($"Failed login attempt: {responseGrpc.Details.Mess}");
-                    return BadRequest(new LoginResponse
-                    {
-                        Token = null,
-                        Message = responseGrpc.Details.Mess,
-                        IsSuccess = false
-                    });
+                    return BadRequest(new LoginResponse(responseGrpc.Details.Mess));
                 }
 
                 logger.Info("User login successfully");
-                return Ok(new LoginResponse
-                {
-                    Token = responseGrpc.Token,
-                    Message = "Login successful",
-                    IsSuccess = true
-                });
+                return Ok(new LoginResponse(responseGrpc.Token, "Login successful"));
             }
             catch (Exception ex)
             {
                 logger.Error($"Error during login: {ex.Message}");
-                return BadRequest(new LoginResponse
-                {
-                    Token = null,
-                    Message = "Login failed",
-                    IsSuccess = false
-                });
+                return BadRequest(new LoginResponse("Login failed"));
             }
         }
 

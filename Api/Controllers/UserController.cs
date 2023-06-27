@@ -20,6 +20,25 @@ namespace Api.Controllers
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(UserController));
 
+        private async Task<string> GetGRPCChannel(string serviceName)
+        {
+            string channel = "";
+
+            try
+            {
+                channel = await GetChannelRequest.GetChannel(serviceName);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Error in gRPC discovery in {serviceName}: {ex.Message}");
+                throw new Exception("Service not available");
+            }
+
+            logger.Info($"{serviceName} channel = {channel}");
+
+            return channel;
+        }
+
         [HttpPost]
         [Route("registration")]
         public async Task<IActionResult> RegistrationAsync(RegistrationRequest request)
@@ -27,32 +46,16 @@ namespace Api.Controllers
             if (!request.IsValid())
             {
                 logger.Warn($"Invalid registration data received for user '{request.Username}'");
-                return BadRequest(new RegistrationResponse
-                {
-                    Token = null,
-                    Message = "Invalid registration data",
-                    IsSuccess = false
-                });
+                return BadRequest(new RegistrationResponse("Invalid registration data"));
             }
 
-            string channel = "";
 
-            try
+            var channel = await GetGRPCChannel("UserGrpcService");
+
+            if (channel == "")
             {
-                channel = await GetChannelRequest.GetChannel("UserGrpcService");
+                return BadRequest(new RegistrationResponse("Service not available"));
             }
-            catch (Exception ex)
-            {
-                logger.Error($"Error in gRPC discovery in UserGrpcService: {ex.Message}");
-                return BadRequest(new RegistrationResponse
-                {
-                    Token = null,
-                    Message = "Service not available",
-                    IsSuccess = false
-                });
-            }
-
-            logger.Info($"UserGrpcChannel = {channel}");
 
             try
             {
@@ -60,31 +63,16 @@ namespace Api.Controllers
                 if (!responseGrpc.Details.Success)
                 {
                     logger.Warn($"Failed registration attempt: {responseGrpc.Details.Mess}");
-                    return BadRequest(new RegistrationResponse
-                    {
-                        Token = null,
-                        Message = responseGrpc.Details.Mess,
-                        IsSuccess = false
-                    });
+                    return BadRequest(new RegistrationResponse(responseGrpc.Details.Mess));
                 }
 
                 logger.Info("User registered successfully");
-                return Ok(new RegistrationResponse
-                {
-                    Token = responseGrpc.User.Token,
-                    Message = "User registered successfully",
-                    IsSuccess = true
-                });
+                return Ok(new RegistrationResponse(responseGrpc.User.Token, "User registered successfully"));
             }
             catch (Exception ex)
             {
                 logger.Error($"Error during registration: {ex.Message}");
-                return BadRequest(new RegistrationResponse
-                {
-                    Token = null,
-                    Message = "Registration failed.",
-                    IsSuccess = false
-                });
+                return BadRequest("Registration failed");
             }
         }
 

@@ -123,29 +123,14 @@ namespace Api.Controllers
             if (!request.IsValid())
             {
                 logger.Error("Invalid verify token request");
-                return BadRequest(new VerifyUserResponse
-                {
-                    Token = null,
-                    Message = "Invalid request",
-                    IsSuccess = false
-                });
+                return BadRequest(new VerifyUserResponse("Invalid request"));
             }
 
-            string channel = "";
+            var channel = await GetGRPCChannel("UserGrpcService");
 
-            try
+            if (channel == "")
             {
-                channel = await GetChannelRequest.GetChannel("UserGrpcService");
-            }
-            catch (Exception ex)
-            {
-                logger.Error($"Error in gRPC discovery: {ex.Message}");
-                return BadRequest(new VerifyUserResponse
-                {
-                    Token = null,
-                    Message = "Service not available",
-                    IsSuccess = false
-                });
+                return BadRequest(new VerifyUserResponse("Service not available"));
             }
 
             logger.Info($"UserGrpcChannel = {channel}");
@@ -156,31 +141,16 @@ namespace Api.Controllers
                 if (!responseGrpc.Details.Success)
                 {
                     logger.Error($"Failed token verification attempt: {responseGrpc.Details.Mess}");
-                    return BadRequest(new VerifyUserResponse
-                    {
-                        Token = null,
-                        Message = responseGrpc.Details.Mess,
-                        IsSuccess = false
-                    });
+                    return BadRequest(new VerifyUserResponse(responseGrpc.Details.Mess));
                 }
 
                 logger.Info($"Token verify successfully");
-                return Ok(new VerifyUserResponse
-                {
-                    Token = responseGrpc.User.Token,
-                    Message = "Verification is successful",
-                    IsSuccess = true
-                });
+                return Ok(new VerifyUserResponse(responseGrpc.User.Token, "Verification is successful"));
             }
             catch (Exception ex)
             {
                 logger.Error($"Error during login: {ex.Message}");
-                return BadRequest(new VerifyUserResponse
-                {
-                    Token = null,
-                    Message = "Verification failed",
-                    IsSuccess = false
-                });
+                return BadRequest(new VerifyUserResponse("Verification failed"));
             }
         }
     }

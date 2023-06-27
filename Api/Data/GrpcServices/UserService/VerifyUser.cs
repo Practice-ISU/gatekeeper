@@ -7,7 +7,7 @@ namespace Api.Data.GrpcServices.UserService
 {
     public class VerifyUserGrpc
     {
-        public static async Task<UserVerifyResponse> VerifyUser(string token, string channel)
+        public static async Task<UserVerifyResponse> VerifyUser(string? token, string channel)
         {
             ChannelBase? grpcChannel = null;
             try

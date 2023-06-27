@@ -1,4 +1,5 @@
 ﻿using Api.Data.Api.Requests;
+using Grpc.Core;
 using Grpc.Net.Client;
 using ProtoUser;
 
@@ -6,16 +7,30 @@ namespace Api.Data.GrpcServices.UserService
 {
     public class RegistrationRequestGrpc
     {
-        public static async Task<UserRegisterResponse> Registration(RegistrationRequest model, string chanel)
+        public static async Task<UserRegisterResponse> Registration(RegistrationRequest model, string channel)
         {
-            using var channel = GrpcChannel.ForAddress(chanel);
-            var client = new UserGrpcService.UserGrpcServiceClient(channel);
-            var response = await client.RegisterUserAsync(new UserRegisterDTO { Username = model.Username, Password = model.Password });
+            ChannelBase? grpcChannel = null;
+            try
+            {
+                grpcChannel = GrpcChannel.ForAddress(channel);
+                var grpcClient = new UserGrpcService.UserGrpcServiceClient(grpcChannel);
 
-            // Console.WriteLine($"Success: {response.Details.Success}, Username: {response.User.Username}");
-            channel.ShutdownAsync().Wait();
+                var response = await grpcClient.RegisterUserAsync(new UserRegisterDTO
+                {
+                    Username = model.Username,
+                    Password = model.Password
+                });
 
-            return response;
+                return response;
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
+            {
+                throw new ArgumentException($"Invalid channel URL: {channel}", nameof(channel));
+            }
+            finally
+            {
+                await grpcChannel?.ShutdownAsync()!;
+            }
         }
     }
 }

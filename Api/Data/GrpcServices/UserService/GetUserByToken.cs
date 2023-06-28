@@ -7,7 +7,7 @@ namespace Api.Data.GrpcServices.UserService
 {
     public class GetUserByTokenGrpc
     {
-        public static async Task<UserResponse> GetUserByTokenAsync(string token, string channel)
+        public static async Task<UserResponse> GetUserByTokenAsync(string? token, string channel)
         {
             if (string.IsNullOrEmpty(token))
             {

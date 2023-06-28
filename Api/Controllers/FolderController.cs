@@ -141,5 +141,43 @@ namespace Api.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("rename")]
+        public async Task<ActionResult<RenameFolderResponse>> RenameFolderAsync(RenameFolderRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid rename folder data received for token '{request.Token}'");
+                return BadRequest(new RenameFolderResponse("Invalid rename folder data"));
+            }
+
+            var channel = await GetGrpcChannel("FolderGrpcService");
+
+            if (channel == "")
+            {
+                _logger.Error($"Service not available");
+                return BadRequest(new RenameFolderResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await RenameFolderGrpc.RenameFolder(request.NewFolderName, request.FolderId, userId, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    _logger.Error($"Failed to rename folder: {responseGrpc.Details.Mess}");
+                    return BadRequest(new RenameFolderResponse(responseGrpc.Details.Mess));
+                }
+
+                _logger.Info($"Folder renamed successfully. FolderId: {request.FolderId}, UserId: {userId}");
+                return Ok(new RenameFolderResponse(responseGrpc.Folder.Id, "Folder renamed successfully"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during folder rename: {ex.Message}");
+                return BadRequest(new RenameFolderResponse("Error renaming folder"));
+            }
+        }
     }
 }

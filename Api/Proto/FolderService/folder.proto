@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package folderservice;
+
+option go_package = "storage-service/pkg/grpc/folder";
+
+message FolderDTO {
+    int64 id           = 1;
+    int64 user_id      = 2;
+    string folder_name = 3;
+}
+
+message FolderAddDTO {
+    int64 user_id      = 1;
+    string folder_name = 2;
+}
+
+message FolderDeleteDTO {
+    int64 id     = 1;
+	int64 user_id      = 2;
+}
+
+message FolderDeleteResponse {
+    bool success = 1;
+    string mess  = 2;
+}
+
+message FolderRenameDTO {
+    int64 id            = 1;
+    string new_folder_name = 2;
+	int64 user_id      = 3;
+}
+
+message FolderGetDTO {
+    int64 id           = 1;
+	int64 user_id = 2;
+}
+
+message UserId {
+	int64 user_id = 1;
+}
+
+message Details {
+	bool success = 1;
+	string mess = 2;
+}
+
+message FolderResponse {
+	Details details = 1;
+	FolderDTO folder = 2;
+}
+
+message AllFoldersResponse {
+	Details details = 1;
+	repeated FolderDTO folders = 2;
+}
+
+service FolderService {
+    rpc AddFolder(FolderAddDTO) returns (FolderResponse);
+    rpc DeleteFolder(FolderDeleteDTO) returns (Details);
+    rpc RenameFolder(FolderRenameDTO) returns (FolderResponse);
+
+	rpc GetFolder(FolderGetDTO) returns (FolderResponse);
+    rpc GetAllFolders(UserId) returns (AllFoldersResponse);
+}

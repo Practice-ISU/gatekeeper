@@ -78,7 +78,7 @@ namespace Api.Controllers
 
             if (channel == "")
             {
-                return BadRequest(new RegistrationResponse("Service not available"));
+                return BadRequest(new DeleteFolderResponse("Service not available"));
             }
 
             try
@@ -98,8 +98,48 @@ namespace Api.Controllers
             catch (Exception ex)
             {
                 _logger.Error($"Error during folder add: {ex.Message}");
-                return BadRequest(new VerifyUserResponse("Add folder failed"));
+                return BadRequest(new AddFolderResponse("Add folder failed"));
             }
         }
+
+        [HttpPost]
+        [Route("delete")]
+        public async Task<ActionResult<DeleteFolderResponse>> DeleteFolderAsync(DeleteFolderRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid delete folder data received for token '{request.Token}'");
+                return BadRequest(new DeleteFolderResponse("Invalid delete folder data"));
+            }
+
+            var channel = await GetGrpcChannel("FolderGrpcService");
+
+            if (channel == "")
+            {
+                _logger.Error($"Service not available");
+                return BadRequest(new DeleteFolderResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await DeleteFolderGrpc.DeleteFolder(request.FolderId, userId, channel);
+                if (!responseGrpc.Success)
+                {
+                    _logger.Error($"Failed to delete folder: {responseGrpc.Mess}");
+                    return BadRequest(new DeleteFolderResponse(responseGrpc.Mess));
+                }
+
+                _logger.Info($"Folder deleted successfully. FolderId: {request.FolderId}, UserId: {userId}");
+                return Ok(new DeleteFolderResponse("Folder deleted successfully", true));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during folder deletion: {ex.Message}");
+                return BadRequest(new DeleteFolderResponse("Error deleting folder"));
+            }
+        }
+
     }
 }

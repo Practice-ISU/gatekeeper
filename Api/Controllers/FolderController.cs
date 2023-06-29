@@ -202,7 +202,7 @@ namespace Api.Controllers
             {
                 long userId = await GetUserIdByToken(request.Token);
 
-                var responseGrpc = await GetFolderResponseGrpc.GetFolder((Int64)request.FolderId!, userId, channel);
+                var responseGrpc = await GetFolderGrpc.GetFolder((Int64)request.FolderId!, userId, channel);
                 if (!responseGrpc.Details.Success)
                 {
                     _logger.Error($"Failed to get folder folder: {responseGrpc.Details.Mess}");
@@ -218,5 +218,8 @@ namespace Api.Controllers
                 return BadRequest(new GetFolderResponse("Error get folder"));
             }
         }
+
+
+        
     }
 }

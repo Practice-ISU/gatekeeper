@@ -5,7 +5,7 @@ using Grpc.Net.Client;
 
 namespace Api.Data.GrpcServices.FolderService
 {
-    public class GetFolderResponseGrpc
+    public class GetFolderGrpc
     {
         public static async Task<FolderResponse> GetFolder(Int64 folderId, Int64 userId, string channel)
         {

@@ -1,4 +1,4 @@
-﻿namespace Api.Data.Api.Responses
+﻿namespace Api.Data.Api.Responses.UserController
 {
     /// <summary>
     /// Represents a response returned by the API after a registration attempt is made.

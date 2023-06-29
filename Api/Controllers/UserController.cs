@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    using Api.Data.Api.Requests;
     using Api.Data.Api.Responses;
     using System.Threading.Tasks;
     using Data.GrpcServices.UserService;
@@ -13,6 +12,7 @@ namespace Api.Controllers
     using Api.Data.GrpcServices.DiscoveryService;
     using Discovery;
     using log4net;
+    using Api.Data.Api.Requests.UserController;
 
     [Route("auth")]
     [ApiController]

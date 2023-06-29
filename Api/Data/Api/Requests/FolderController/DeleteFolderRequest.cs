@@ -1,9 +1,9 @@
-﻿namespace Api.Data.Api.Requests
+﻿namespace Api.Data.Api.Requests.FolderController
 {
     public class DeleteFolderRequest
     {
         public string? Token { get; set; }
-        public Int64? FolderId { get; set; }
+        public long? FolderId { get; set; }
 
         public bool IsValid()
         {

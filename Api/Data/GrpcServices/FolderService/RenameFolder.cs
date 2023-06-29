@@ -7,7 +7,7 @@ namespace Api.Data.GrpcServices.FolderService
 {
     public class RenameFolderGrpc
     {
-        public static async Task<FolderResponse> RenameFolder(string? newFolderName, Int64? folderId, Int64 userId, string channel)
+        public static async Task<FolderResponse> RenameFolder(string? newFolderName, Int64 folderId, Int64 userId, string channel)
         {
             ChannelBase? grpcChannel = null;
             try

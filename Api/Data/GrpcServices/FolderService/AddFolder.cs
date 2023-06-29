@@ -1,4 +1,4 @@
-﻿using Api.Data.Api.Requests;
+﻿using Api.Data.Api.Requests.FolderController;
 using Discovery;
 using Folderservice;
 using Grpc.Core;

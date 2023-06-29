@@ -1,4 +1,4 @@
-﻿namespace Api.Data.Api.Responses
+﻿namespace Api.Data.Api.Responses.UserController
 {
     /// <summary>
     /// Represents the response generated when a user logs in.

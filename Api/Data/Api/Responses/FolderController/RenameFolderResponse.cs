@@ -1,4 +1,4 @@
-﻿namespace Api.Data.Api.Responses
+﻿namespace Api.Data.Api.Responses.FolderController
 {
     /// <summary>
     /// Represents the response generated when a folder is renamed.
@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets or sets the ID of the renamed folder.
         /// </summary>
-        public Int64? FolderId { get; set; }
+        public long? FolderId { get; set; }
 
         /// <summary>
         /// Gets or sets a message describing the result of the folder rename.
@@ -26,7 +26,7 @@
         /// <param name="folderId">The ID of the renamed folder.</param>
         /// <param name="message">The message describing the folder rename result.</param>
         /// <param name="isSuccess">A value indicating whether the folder rename was successful or not.</param>
-        public RenameFolderResponse(Int64? folderId, string? message, bool isSuccess)
+        public RenameFolderResponse(long? folderId, string? message, bool isSuccess)
         {
             FolderId = folderId;
             Message = message;
@@ -50,7 +50,7 @@
         /// </summary>
         /// <param name="folderId">The ID of the renamed folder.</param>
         /// <param name="message">The message describing the folder rename result.</param>
-        public RenameFolderResponse(Int64 folderId, string? message)
+        public RenameFolderResponse(long folderId, string? message)
             : this(folderId, message, true)
         {
             // Constructor for passing both folderId and message to initialize the RenameFolderResponse object.

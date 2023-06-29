@@ -1,4 +1,4 @@
-﻿using Api.Data.Api.Requests;
+﻿using Api.Data.Api.Requests.UserController;
 using Grpc.Core;
 using Grpc.Net.Client;
 using ProtoUser;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Api.Data.Api.Requests
+namespace Api.Data.Api.Requests.UserController
 {
     public class LoginRequest
     {

@@ -7,7 +7,7 @@ namespace Api.Data.GrpcServices.FolderService
 {
     public class DeleteFolderGrpc
     {
-        public static async Task<Folderservice.Details> DeleteFolder(Int64? folderId, Int64 userId, string channel)
+        public static async Task<Folderservice.Details> DeleteFolder(Int64 folderId, Int64 userId, string channel)
         {
             ChannelBase? grpcChannel = null;
             try

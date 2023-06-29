@@ -1,5 +1,5 @@
-﻿using Api.Data.Api.Requests;
-using Api.Data.Api.Responses;
+﻿using Api.Data.Api.Requests.FolderController;
+using Api.Data.Api.Responses.FolderController;
 using Api.Data.GrpcServices.DiscoveryService;
 using Api.Data.GrpcServices.FolderService;
 using Api.Data.GrpcServices.UserService;
@@ -124,7 +124,7 @@ namespace Api.Controllers
             {
                 long userId = await GetUserIdByToken(request.Token);
 
-                var responseGrpc = await DeleteFolderGrpc.DeleteFolder(request.FolderId, userId, channel);
+                var responseGrpc = await DeleteFolderGrpc.DeleteFolder((Int64)request.FolderId!, userId, channel);
                 if (!responseGrpc.Success)
                 {
                     _logger.Error($"Failed to delete folder: {responseGrpc.Mess}");
@@ -163,7 +163,7 @@ namespace Api.Controllers
             {
                 long userId = await GetUserIdByToken(request.Token);
 
-                var responseGrpc = await RenameFolderGrpc.RenameFolder(request.NewFolderName, request.FolderId, userId, channel);
+                var responseGrpc = await RenameFolderGrpc.RenameFolder(request.NewFolderName, (Int64)request.FolderId!, userId, channel);
                 if (!responseGrpc.Details.Success)
                 {
                     _logger.Error($"Failed to rename folder: {responseGrpc.Details.Mess}");

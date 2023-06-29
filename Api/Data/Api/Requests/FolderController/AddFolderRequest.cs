@@ -1,4 +1,4 @@
-﻿namespace Api.Data.Api.Requests
+﻿namespace Api.Data.Api.Requests.FolderController
 {
     public class AddFolderRequest
     {

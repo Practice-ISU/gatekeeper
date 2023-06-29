@@ -1,4 +1,4 @@
-﻿namespace Api.Data.Api.Responses
+﻿namespace Api.Data.Api.Responses.FolderController
 {
     /// <summary>
     /// Represents the response generated when a folder is deleted.

@@ -179,5 +179,44 @@ namespace Api.Controllers
                 return BadRequest(new RenameFolderResponse("Error renaming folder"));
             }
         }
+
+        [HttpPost]
+        [Route("get")]
+        public async Task<ActionResult<GetFolderResponse>> GetFolderAsync(RenameFolderRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid get folder data received for token '{request.Token}'");
+                return BadRequest(new GetFolderResponse("Invalid get folder data"));
+            }
+
+            var channel = await GetGrpcChannel("FolderGrpcService");
+
+            if (channel == "")
+            {
+                _logger.Error($"Service not available");
+                return BadRequest(new GetFolderResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await GetFolderResponseGrpc.GetFolder((Int64)request.FolderId!, userId, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    _logger.Error($"Failed to get folder folder: {responseGrpc.Details.Mess}");
+                    return BadRequest(new GetFolderResponse(responseGrpc.Details.Mess));
+                }
+
+                _logger.Info($"Get folder successfully. FolderId: {request.FolderId}, UserId: {userId}");
+                return Ok(new GetFolderResponse("Get folder successfully", true));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during get folder: {ex.Message}");
+                return BadRequest(new GetFolderResponse("Error get folder"));
+            }
+        }
     }
 }

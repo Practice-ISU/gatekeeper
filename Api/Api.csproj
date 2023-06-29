@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <None Remove="Proto\DiscoveryService\discovery.proto" />
-    <None Remove="Proto\FolderService\folder.proto" />
+    <None Remove="Proto\StorageService\file.proto" />
+    <None Remove="Proto\StorageService\folder.proto" />
     <None Remove="Proto\UserService\user.proto" />
   </ItemGroup>
 
@@ -24,7 +25,8 @@
 
   <ItemGroup>
     <Protobuf Include="Proto\DiscoveryService\discovery.proto" GrpcServices="Client" />
-    <Protobuf Include="Proto\FolderService\folder.proto" GrpcServices="Client" />
+    <Protobuf Include="Proto\StorageService\file.proto" GrpcServices="Client" />
+    <Protobuf Include="Proto\StorageService\folder.proto" GrpcServices="Client" />
     <Protobuf Include="Proto\UserService\user.proto" GrpcServices="Client" />
   </ItemGroup>
 

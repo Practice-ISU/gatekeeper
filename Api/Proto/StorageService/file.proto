@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package file_service;
+
+option go_package = "storage-service/pkg/grpc/file";
+
+message FileDTO {
+	int64 id = 1;
+	string filename = 2;
+	int64 folder_id = 3;
+}
+
+message FileAddDTO {
+	string file_name = 1;
+	int64 folder_id = 2;
+	string base64 = 3;
+	string format = 4;
+}
+
+message FileDeleteDTO {
+	int64 id = 1;
+}
+
+message FileRenameDTO {
+	int64 id = 1;
+	string new_filename = 2;
+}
+
+message FileGetDTO {
+	int64 id = 1;
+}
+
+message FileGetAllDTO {
+	int64 folder_id = 1;
+}
+
+message Details {
+	bool success = 1;
+	string mess = 2;
+}
+
+message FileResponse {
+	Details details = 1;
+	FileDTO file = 2;
+}
+
+message FileAllResponse {
+	Details details = 1;
+	repeated FileDTO files = 2;
+}
+
+message FileBase64 {
+	int64 id = 1;
+	int64 folder_id = 2;
+	string file_name = 3;
+	string base64 = 4;
+}
+
+message FileBase64Response {
+	Details details = 1;
+	FileBase64 file = 2;
+}
+
+message FileAllBase64Response {
+	Details details = 1;
+	repeated FileBase64 files = 2;
+}
+
+message FileAllZipResponse {
+	Details details = 1;
+	int64 folder_id = 2;
+	string zip_name = 3;
+	bytes zip = 4;
+}
+
+service FileService {
+    rpc AddFile(FileAddDTO) returns (FileResponse);
+	rpc DeleteFile(FileDeleteDTO) returns (Details);
+	rpc RenameFile(FileRenameDTO) returns (FileResponse);
+	
+	rpc GetFile(FileGetDTO) returns (FileResponse);
+	rpc GetAllFilesInFolder(FileGetAllDTO) returns (FileAllResponse);
+
+	rpc GetFileBase64(FileGetDTO) returns (FileBase64Response);
+	rpc GetAllFilesInFolderBase64(FileGetAllDTO) returns (FileAllBase64Response);
+
+	rpc GetAllFilesInFolderZip(FileGetAllDTO) returns (FileAllZipResponse);
+}

@@ -13,6 +13,7 @@ namespace Api.Controllers
     using Discovery;
     using log4net;
     using Api.Data.Api.Requests.UserController;
+    using Api.Data.Api.Responses.UserController;
 
     [Route("auth")]
     [ApiController]

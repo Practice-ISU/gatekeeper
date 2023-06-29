@@ -220,6 +220,44 @@ namespace Api.Controllers
         }
 
 
-        
+        [HttpPost]
+        [Route("getAll")]
+        public async Task<ActionResult<GetAllFoldersResponse>> GetAllFoldersAsync(GetAllFoldersRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid get all folders data received for token '{request.Token}'");
+                return BadRequest(new GetAllFoldersResponse("Invalid get all folders data"));
+            }
+
+            var channel = await GetGrpcChannel("FolderGrpcService");
+
+            if (channel == "")
+            {
+                _logger.Error($"Service not available");
+                return BadRequest(new GetAllFoldersResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await GetAllFoldersGrpc.GetAllFolders(userId, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    _logger.Error($"Failed to get all folders: {responseGrpc.Details.Mess}");
+                    return BadRequest(new GetAllFoldersResponse(responseGrpc.Details.Mess));
+                }
+
+                _logger.Info($"Get all folders successfully UserId: {userId}");
+
+                return Ok(new GetAllFoldersResponse(GetAllFoldersResponse.ConvertToFolderDtoList(responseGrpc.Folders), "Get all folders successfully"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during get all folders: {ex.Message}");
+                return BadRequest(new GetAllFoldersResponse("Error get all folders"));
+            }
+        }
     }
 }

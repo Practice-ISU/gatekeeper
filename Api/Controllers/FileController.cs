@@ -141,5 +141,43 @@ namespace Api.Controllers
                 return BadRequest(new DeleteFileResponse("Add file failed"));
             }
         }
+
+        [HttpPost]
+        [Route("rename")]
+        public async Task<ActionResult<RenameFileResponse>> DeleteFileAsync(RenameFileRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid add file data received for token '{request.Token}'");
+                return BadRequest(new RenameFileResponse("Invalid add file data"));
+            }
+
+            var channel = await GetGrpcChannel("FileGrpcService");
+
+            if (channel == "")
+            {
+                return BadRequest(new RenameFileResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await RenameFileGrpc.RenameFile(request, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    _logger.Error($"Failed to add folder: {responseGrpc.Details.Mess}");
+                    return BadRequest(new RenameFileResponse(responseGrpc.Details.Mess));
+                }
+
+                _logger.Info($"File added successfully");
+                return Ok(new RenameFileResponse(responseGrpc.File.Id, responseGrpc.File.Filename, responseGrpc.File.FolderId, "File renamed successfully", true));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during file add: {ex.Message}");
+                return BadRequest(new RenameFileResponse("Add file failed"));
+            }
+        }
     }
 }

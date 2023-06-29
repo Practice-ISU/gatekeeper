@@ -1,3 +1,5 @@
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "Properties/log4net.config", Watch = true)]
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

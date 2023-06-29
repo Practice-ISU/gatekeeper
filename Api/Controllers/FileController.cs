@@ -15,7 +15,7 @@ namespace Api.Controllers
     [ApiController]
     public class FileController : Controller
     {
-        private readonly ILog _logger = LogManager.GetLogger(typeof(UserController));
+        private readonly ILog _logger = LogManager.GetLogger(typeof(FileController));
 
         private async Task<string> GetGrpcChannel(string serviceName)
         {

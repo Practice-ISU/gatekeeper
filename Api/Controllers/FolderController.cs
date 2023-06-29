@@ -183,7 +183,7 @@ namespace Api.Controllers
 
         [HttpPost]
         [Route("get")]
-        public async Task<ActionResult<GetFolderResponse>> GetFolderAsync(RenameFolderRequest request)
+        public async Task<ActionResult<GetFolderResponse>> GetFolderAsync(GetFolderRequest request)
         {
             if (!request.IsValid())
             {

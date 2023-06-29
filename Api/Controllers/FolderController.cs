@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace Api.Controllers
 {
     [Route("folder")]
+    [ApiController]
     public class FolderController : Controller
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(UserController));

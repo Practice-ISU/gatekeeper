@@ -65,6 +65,7 @@ namespace Api.Controllers
                 throw;
             }
         }
+
         [HttpPost]
         [Route("add")]
         public async Task<ActionResult<AddFileResponse>> AddFileAsync(AddFileRequest request)
@@ -100,6 +101,44 @@ namespace Api.Controllers
             {
                 _logger.Error($"Error during file add: {ex.Message}");
                 return BadRequest(new AddFileResponse("Add file failed"));
+            }
+        }
+
+        [HttpPost]
+        [Route("delete")]
+        public async Task<ActionResult<DeleteFileResponse>> DeleteFileAsync(DeleteFileRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid add file data received for token '{request.Token}'");
+                return BadRequest(new DeleteFileResponse("Invalid add file data"));
+            }
+
+            var channel = await GetGrpcChannel("FileGrpcService");
+
+            if (channel == "")
+            {
+                return BadRequest(new DeleteFileResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await DeleteFileGrpc.DeleteFile(request, channel);
+                if (!responseGrpc.Success)
+                {
+                    _logger.Error($"Failed to add folder: {responseGrpc.Mess}");
+                    return BadRequest(new DeleteFileResponse(responseGrpc.Mess));
+                }
+
+                _logger.Info($"File added successfully");
+                return Ok(new DeleteFileResponse("File deleted successfully", true));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during file add: {ex.Message}");
+                return BadRequest(new DeleteFileResponse("Add file failed"));
             }
         }
     }

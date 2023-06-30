@@ -181,7 +181,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Route("get")]
+        [Route("getBase64")]
         public async Task<ActionResult<GetFileBase64Response>> GetFileBase64Async(GetFileBase64Request request)
         {
             if (!request.IsValid())
@@ -219,7 +219,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Route("getAll")]
+        [Route("getAllBase64")]
         public async Task<ActionResult<GetAllFilesInFolderBase64Response>> GetAllFilesInFolderBase64Async(GetAllFilesInFolderBase64Request request)
         {
             if (!request.IsValid())

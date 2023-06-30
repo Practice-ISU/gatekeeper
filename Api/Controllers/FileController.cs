@@ -179,5 +179,43 @@ namespace Api.Controllers
                 return BadRequest(new RenameFileResponse("Add file failed"));
             }
         }
+
+        [HttpPost]
+        [Route("get")]
+        public async Task<ActionResult<GetFileBase64Response>> GetFileBase64Async(GetFileBase64Request request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid add file data received for token '{request.Token}'");
+                return BadRequest(new GetFileBase64Response("Invalid add file data"));
+            }
+
+            var channel = await GetGrpcChannel("FileGrpcService");
+
+            if (channel == "")
+            {
+                return BadRequest(new GetFileBase64Response("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await GetFileBase64Grpc.GetFileBase64(request.FileId, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    _logger.Error($"Failed to add folder: {responseGrpc.Details.Mess}");
+                    return BadRequest(new GetFileBase64Response(responseGrpc.Details.Mess));
+                }
+
+                _logger.Info($"File added successfully");
+                return Ok(new GetFileBase64Response(responseGrpc.File.Id, responseGrpc.File.FolderId, responseGrpc.File.FileName, responseGrpc.File.Base64, "File get successfully"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during file add: {ex.Message}");
+                return BadRequest(new GetFileBase64Response("Add file failed"));
+            }
+        }
     }
 }

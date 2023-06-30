@@ -33,7 +33,7 @@ namespace Api.Data.GrpcServices.DiscoveryService
                 }
 
                 Console.WriteLine($"{response.ServiceName} channel from discovery = {response.Channel}");
-                return "http://" + response.Channel;
+                return response.Channel;
             }
             catch (RpcException ex)
             {

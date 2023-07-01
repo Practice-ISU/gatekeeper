@@ -8,6 +8,7 @@ message FileDTO {
 	int64 id = 1;
 	string filename = 2;
 	int64 folder_id = 3;
+	string url = 5;
 }
 
 message FileAddDTO {
@@ -68,9 +69,8 @@ message FileAllBase64Response {
 
 message FileAllZipResponse {
 	Details details = 1;
-	int64 folder_id = 2;
 	string zip_name = 3;
-	bytes zip = 4;
+	string url = 4;
 }
 
 service FileService {

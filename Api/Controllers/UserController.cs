@@ -14,6 +14,7 @@ namespace Api.Controllers
     using log4net;
     using Api.Data.Api.Requests.UserController;
     using Api.Data.Api.Responses.UserController;
+    using Api.Data.Api.Responses.FolderController;
 
     [Route("auth")]
     [ApiController]
@@ -42,7 +43,7 @@ namespace Api.Controllers
 
         [HttpPost]
         [Route("registration")]
-        public async Task<IActionResult> RegistrationAsync(RegistrationRequest request)
+        public async Task<ActionResult<RegistrationResponse>> RegistrationAsync(RegistrationRequest request)
         {
             if (!request.IsValid())
             {
@@ -73,7 +74,7 @@ namespace Api.Controllers
             catch (Exception ex)
             {
                 logger.Error($"Error during registration: {ex.Message}");
-                return BadRequest("Registration failed");
+                return BadRequest(new RegistrationResponse("Registration failed"));
             }
         }
 
@@ -81,7 +82,7 @@ namespace Api.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> LoginAsync(LoginRequest request)
+        public async Task<ActionResult<LoginResponse>> LoginAsync(LoginRequest request)
         {
             if (!request.IsValid())
             {
@@ -119,7 +120,7 @@ namespace Api.Controllers
 
         [HttpPost]
         [Route("verify")]
-        public async Task<IActionResult> VerifyTokenAsync(VerifyUserRequest request)
+        public async Task<ActionResult<VerifyUserResponse>> VerifyTokenAsync(VerifyUserRequest request)
         {
             if (!request.IsValid())
             {

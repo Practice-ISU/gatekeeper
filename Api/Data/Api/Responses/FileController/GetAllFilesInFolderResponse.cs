@@ -2,22 +2,22 @@
 {
     public class GetAllFilesInFolderResponse
     {
-        public string? FolderName { get; set; }
+        Folder folder { get; set; }
         public List<FileDtoWithUrl>? Files { get; set; }
         public string? Message { get; set; }
         public bool IsSuccess { get; set; }
 
-        public GetAllFilesInFolderResponse(string? folderName, List<FileDtoWithUrl>? files, string? message, bool isSuccess)
+        public GetAllFilesInFolderResponse(Int64? folderId, string? folderName, List<FileDtoWithUrl>? files, string? message, bool isSuccess)
         {
-            FolderName = folderName;
+            folder = new Folder(folderId, folderName);
             Files = files;
             Message = message;
             IsSuccess = isSuccess;
         }
 
-        public GetAllFilesInFolderResponse(string? message) : this(null,null, message, false) { }
+        public GetAllFilesInFolderResponse(string? message) : this(null, null, null, message, false) { }
 
-        public GetAllFilesInFolderResponse(string? folderName, List<FileDtoWithUrl>? files, string? message) : this(folderName, files, message, false) { }
+        public GetAllFilesInFolderResponse(Int64? folderId, string? folderName, List<FileDtoWithUrl>? files, string? message) : this(folderId, folderName, files, message, false) { }
 
 
         public static List<FileDtoWithUrl> ConvertToFileDtoWithUrlList(Google.Protobuf.Collections.RepeatedField<FileService.FileDTO> fileDtos)
@@ -62,5 +62,17 @@
         /// Gets or sets the file url.
         /// </summary>
         public string? Url { get; set; }
+    }
+
+    public struct Folder
+    {
+        public Int64? FolderId { get; set; }
+        public string? FolderName { get; set; }
+
+        public Folder(Int64? folderId, string? folderName)
+        {
+            FolderId = folderId;
+            FolderName = folderName;
+        }
     }
 }

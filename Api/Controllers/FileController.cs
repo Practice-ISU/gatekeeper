@@ -326,7 +326,7 @@ namespace Api.Controllers
                 var folderResponseGrpc = await GetFolderGrpc.GetFolder((long)request.FolderId!, userId, channelFolder);
 
                 _logger.Info($"File added successfully");
-                return Ok(new GetAllFilesInFolderResponse(folderResponseGrpc.Folder.FolderName, GetAllFilesInFolderResponse.ConvertToFileDtoWithUrlList(responseGrpc.Files), "All files get successfully"));
+                return Ok(new GetAllFilesInFolderResponse(folderResponseGrpc.Folder.Id, folderResponseGrpc.Folder.FolderName, GetAllFilesInFolderResponse.ConvertToFileDtoWithUrlList(responseGrpc.Files), "All files get successfully"));
             }
             catch (Exception ex)
             {

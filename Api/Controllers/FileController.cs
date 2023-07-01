@@ -331,5 +331,43 @@ namespace Api.Controllers
                 return BadRequest(new GetAllFilesInFolderResponse("Add file failed"));
             }
         }
+
+        [HttpPost]
+        [Route("getAllZip")]
+        public async Task<ActionResult<GetAllFilesInFolderZipResponse>> GetAllFilesInFolderZipAsync(GetAllFilesInFolderZipRequest request)
+        {
+            if (!request.IsValid())
+            {
+                _logger.Warn($"Invalid add file data received for token '{request.Token}'");
+                return BadRequest(new GetAllFilesInFolderZipResponse("Invalid add file data"));
+            }
+
+            var channel = await GetGrpcChannel("FileGrpcService");
+
+            if (channel == "")
+            {
+                return BadRequest(new GetAllFilesInFolderZipResponse("Service not available"));
+            }
+
+            try
+            {
+                long userId = await GetUserIdByToken(request.Token);
+
+                var responseGrpc = await GetAllFilesInFolderZipGrpc.GetAllFilesInFolderZip(request.FolderId, channel);
+                if (!responseGrpc.Details.Success)
+                {
+                    _logger.Error($"Failed to add folder: {responseGrpc.Details.Mess}");
+                    return BadRequest(new GetAllFilesInFolderZipResponse(responseGrpc.Details.Mess));
+                }
+
+                _logger.Info($"File added successfully");
+                return Ok(new GetAllFilesInFolderZipResponse(responseGrpc.ZipName, responseGrpc.Url, "All Files in ZIP"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error during file add: {ex.Message}");
+                return BadRequest(new GetAllFilesInFolderZipResponse("Add file failed"));
+            }
+        }
     }
 }

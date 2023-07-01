@@ -24,7 +24,7 @@ namespace Api.Data.GrpcServices.UserService
 
             try
             {
-                var response = await grpcClient.GetUserByTockenAsync(new UserToken
+                var response = await grpcClient.GetUserByTokenAsync(new UserToken
                 {
                     Token = token
                 });

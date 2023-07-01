@@ -257,7 +257,7 @@ namespace Api.Controllers
             catch (Exception ex)
             {
                 _logger.Error($"Error during get all folders: {ex.Message}");
-                return BadRequest(new GetAllFoldersResponse("Error get all folders"));
+                return Ok(new GetAllFoldersResponse(new List<FolderDto>(), "Error get all folders", false));
             }
         }
     }

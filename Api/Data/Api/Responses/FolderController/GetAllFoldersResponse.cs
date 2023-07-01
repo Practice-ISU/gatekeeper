@@ -1,4 +1,6 @@
-﻿namespace Api.Data.Api.Responses.FolderController
+﻿using Api.Data.Api.Responses.FileController;
+
+namespace Api.Data.Api.Responses.FolderController
 {
     /// <summary>
     /// Represents a response object for getting all folders.
@@ -84,11 +86,17 @@
         /// <summary>
         /// Gets or sets the ID of the folder.
         /// </summary>
-        public Int64 Id { get; set; }
+        public Int64? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the folder.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
+
+        public FolderDto(Int64? folderId, string? folderName)
+        {
+            Id = folderId;
+            Name = folderName;
+        }
     }
 }

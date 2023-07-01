@@ -1,15 +1,17 @@
-﻿namespace Api.Data.Api.Responses.FileController
+﻿using Api.Data.Api.Responses.FolderController;
+
+namespace Api.Data.Api.Responses.FileController
 {
     public class GetAllFilesInFolderResponse
     {
-        Folder folder { get; set; }
+        public FolderDto folder { get; set; }
         public List<FileDtoWithUrl>? Files { get; set; }
         public string? Message { get; set; }
         public bool IsSuccess { get; set; }
 
         public GetAllFilesInFolderResponse(Int64? folderId, string? folderName, List<FileDtoWithUrl>? files, string? message, bool isSuccess)
         {
-            folder = new Folder(folderId, folderName);
+            folder = new FolderDto(folderId, folderName);
             Files = files;
             Message = message;
             IsSuccess = isSuccess;

@@ -2,20 +2,22 @@
 {
     public class GetAllFilesInFolderResponse
     {
+        public string? FolderName { get; set; }
         public List<FileDtoWithUrl>? Files { get; set; }
         public string? Message { get; set; }
         public bool IsSuccess { get; set; }
 
-        public GetAllFilesInFolderResponse(List<FileDtoWithUrl>? files, string? message, bool isSuccess)
+        public GetAllFilesInFolderResponse(string? folderName, List<FileDtoWithUrl>? files, string? message, bool isSuccess)
         {
+            FolderName = folderName;
             Files = files;
             Message = message;
             IsSuccess = isSuccess;
         }
 
-        public GetAllFilesInFolderResponse(string? message) : this(null, message, false) { }
+        public GetAllFilesInFolderResponse(string? message) : this(null,null, message, false) { }
 
-        public GetAllFilesInFolderResponse(List<FileDtoWithUrl>? files, string? message) : this(files, message, false) { }
+        public GetAllFilesInFolderResponse(string? folderName, List<FileDtoWithUrl>? files, string? message) : this(folderName, files, message, false) { }
 
 
         public static List<FileDtoWithUrl> ConvertToFileDtoWithUrlList(Google.Protobuf.Collections.RepeatedField<FileService.FileDTO> fileDtos)

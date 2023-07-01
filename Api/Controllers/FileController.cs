@@ -322,8 +322,11 @@ namespace Api.Controllers
                     return BadRequest(new GetAllFilesInFolderResponse(responseGrpc.Details.Mess));
                 }
 
+                var channelFolder = await GetGrpcChannel("FolderGrpcService");
+                var folderResponseGrpc = await GetFolderGrpc.GetFolder((long)request.FolderId!, userId, channelFolder);
+
                 _logger.Info($"File added successfully");
-                return Ok(new GetAllFilesInFolderResponse(GetAllFilesInFolderResponse.ConvertToFileDtoWithUrlList(responseGrpc.Files), "All files get successfully"));
+                return Ok(new GetAllFilesInFolderResponse(folderResponseGrpc.Folder.FolderName, GetAllFilesInFolderResponse.ConvertToFileDtoWithUrlList(responseGrpc.Files), "All files get successfully"));
             }
             catch (Exception ex)
             {

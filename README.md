@@ -2,6 +2,7 @@
 
 ![C#](https://img.shields.io/badge/ASP.NET-%23239120.svg?style=for-the-badge&logo=c-sharp&logoColor=white)
 ![GRPC](https://img.shields.io/badge/grpc-2da7b0?style=for-the-badge&logoColor=white)
+![License MIT](https://img.shields.io/badge/MIT-aa0000?style=for-the-badge&logoColor=white)
 
 Gatekeeper is an important service that allows clients to interact with other services without the need to manage them directly.
 
